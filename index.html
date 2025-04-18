@@ -1,37 +1,82 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>GitHub লাইভ টেক্সট</title>
+  <title>Text Uploader</title>
   <style>
     body {
       background-color: #111;
-      color: #fff;
-      font-family: 'Noto Sans Bengali', sans-serif;
+      color: white;
+      font-family: Arial;
       text-align: center;
       padding: 30px;
     }
-    #text {
-      font-size: 22px;
-      white-space: pre-wrap;
+    textarea, input {
+      width: 90%;
+      font-size: 18px;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px 0;
+    }
+    textarea {
+      height: 150px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
-  <h2>লাইভ লেখা (GitHub JSON থেকে)</h2>
-  <div id="text">লোড হচ্ছে...</div>
+  <h2>Joy ভাই - পাসওয়ার্ড দিয়ে লেখা দিন</h2>
+  
+  <input type="password" id="passwordInput" placeholder="পাসওয়ার্ড দিন"><br>
+  <textarea id="textInput" placeholder="এখানে লিখুন..."></textarea><br>
+  <button onclick="uploadText()">পাঠান</button>
+
+  <p id="status"></p>
 
   <script>
-    async function fetchText() {
-      const res = await fetch('https://github.com/jehadjoy55/copytext/blob/main/text.json');
-      const data = await res.json();
-      document.getElementById("text").innerText = data.text;
+    const repo = "jehadjoy55/copytext";
+    const filePath = "text.json";
+    const token = "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";
+    const correctPassword = "78907890";
+
+    async function uploadText() {
+      const enteredPassword = document.getElementById("passwordInput").value;
+      if (enteredPassword !== correctPassword) {
+        document.getElementById("status").innerText = "❌ ভুল পাসওয়ার্ড!";
+        return;
+      }
+
+      const text = document.getElementById("textInput").value;
+      document.getElementById("status").innerText = "⏳ পাঠানো হচ্ছে...";
+
+      const getRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const fileData = await getRes.json();
+      const content = btoa(JSON.stringify({ text }));
+
+      const res = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: "Update text",
+          content: content,
+          sha: fileData.sha
+        })
+      });
+
+      if (res.ok) {
+        document.getElementById("status").innerText = "✅ সফলভাবে পাঠানো হয়েছে!";
+      } else {
+        document.getElementById("status").innerText = "⚠️ ভুল হয়েছে!";
+      }
     }
-
-    fetchText(); // প্রথমবার
-
-    // প্রতি ৩ সেকেন্ডে চেক করবে
-    setInterval(fetchText, 3000);
   </script>
 </body>
 </html>
