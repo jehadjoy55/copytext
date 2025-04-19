@@ -1,26 +1,40 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <title>Live Text Viewer</title>
+  <meta charset="UTF-8" />
+  <title>Live Viewer - Joy ভাই</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
   <style>
-    body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
-    pre { white-space: pre-wrap; font-size: 20px; }
+    body { background: #000; color: #00ff00; font-family: monospace; padding: 40px; font-size: 22px; }
+    #output { white-space: pre-wrap; word-wrap: break-word; background: #111; padding: 20px; border-radius: 10px; }
   </style>
 </head>
 <body>
-  <h2>📢 Joy ভাইয়ের পাঠানো লেখা</h2>
-  <pre id="output">লোড হচ্ছে...</pre>
+  <h2>📡 Live Viewer - Joy ভাই</h2>
+  <div id="output">⏳ Loading...</div>
 
   <script>
-    async function load() {
-      const res = await fetch("https://raw.githubusercontent.com/jehadjoy55/copytext/main/text.json?" + Math.random());
-      const data = await res.json();
-      document.getElementById("output").innerText = data.text + "\n\n🕐 আপডেট সময়: " + data.time;
-    }
+    const firebaseConfig = {
+      apiKey: "AIzaSyCdJKDPhOAK6G5jPUdUeYors41e5dzX1Dg",
+      authDomain: "livetextsync.firebaseapp.com",
+      databaseURL: "https://livetextsync-default-rtdb.firebaseio.com",
+      projectId: "livetextsync",
+      storageBucket: "livetextsync.firebasestorage.app",
+      messagingSenderId: "797246417933",
+      appId: "1:797246417933:web:3c6e4a1d5995c75ab6b944",
+      measurementId: "G-LXQV3VK7TJ"
+    };
 
-    load();
-    setInterval(load, 3000);
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    const outputDiv = document.getElementById('output');
+
+    database.ref("copy").on("value", (snapshot) => {
+      const data = snapshot.val();
+      outputDiv.innerText = data?.text || "❌ কিছুই পাওয়া যায়নি!";
+    });
   </script>
 </body>
 </html>
