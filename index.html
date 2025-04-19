@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8" />
-  <title>Joy ভাইকে পাঠান</title>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+  <meta charset="UTF-8">
+  <title>Joy ভাই - পাঠাও</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
   <style>
-    body { background: #000; color: #fff; text-align: center; font-family: sans-serif; padding: 30px; }
-    textarea { width: 90%; height: 100px; margin-top: 20px; background: #111; color: #fff; border: none; font-size: 18px; padding: 10px; }
-    button { padding: 10px 20px; font-size: 16px; background: #0f0; color: #000; border: none; margin-top: 10px; cursor: pointer; }
+    body { background-color: #111; color: white; font-family: sans-serif; text-align: center; padding: 30px; }
+    textarea, input, button { width: 90%; max-width: 400px; padding: 10px; margin: 10px 0; border-radius: 10px; border: none; font-size: 18px; }
+    button { background-color: #00c853; color: white; cursor: pointer; }
   </style>
 </head>
 <body>
-  <h2>💬 Joy ভাই - ফোন থেকে পাঠান</h2>
-  <textarea id="textInput" placeholder="এখানে লিখুন..."></textarea><br />
+  <h2>Joy ভাই - লেখাটি পাঠান</h2>
+  <textarea id="text" rows="6" placeholder="এখানে লিখুন..."></textarea><br>
   <button onclick="sendText()">📤 পাঠান</button>
+  <p id="status"></p>
 
   <script>
     const firebaseConfig = {
@@ -28,17 +29,20 @@
       measurementId: "G-LXQV3VK7TJ"
     };
 
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
     function sendText() {
-      const text = document.getElementById('textInput').value;
-      database.ref("copy").set({
-        text: text,
-        time: Date.now()
-      });
-      document.getElementById('textInput').value = "";
+      const text = document.getElementById('text').value;
+      db.ref("copy").set({ text: text })
+        .then(() => {
+          document.getElementById('status').innerText = "✅ পাঠানো হয়েছে!";
+        })
+        .catch(() => {
+          document.getElementById('status').innerText = "❌ পাঠাতে ব্যর্থ!";
+        });
     }
   </script>
 </body>
 </html>
+
