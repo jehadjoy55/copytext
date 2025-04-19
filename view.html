@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Live Viewer - Joy ভাই</title>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
   <style>
     body { background: #000; color: #00ff00; font-family: monospace; padding: 40px; font-size: 22px; }
     #output { white-space: pre-wrap; word-wrap: break-word; background: #111; padding: 20px; border-radius: 10px; }
@@ -26,15 +26,15 @@
       measurementId: "G-LXQV3VK7TJ"
     };
 
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
     const outputDiv = document.getElementById('output');
-
-    database.ref("copy").on("value", (snapshot) => {
+    db.ref("copy").on("value", (snapshot) => {
       const data = snapshot.val();
-      outputDiv.innerText = data?.text || "❌ কিছুই পাওয়া যায়নি!";
+      outputDiv.innerText = data?.text || "❌ কিছু পাওয়া যায়নি!";
     });
   </script>
 </body>
 </html>
+
