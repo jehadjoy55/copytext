@@ -1,77 +1,43 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <title>Joy ভাই - পাসওয়ার্ড দিয়ে লেখার পেজ</title>
+  <meta charset="UTF-8" />
+  <title>Joy ভাইকে পাঠান</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
   <style>
-    body { background: #111; color: #fff; font-family: sans-serif; text-align: center; padding: 20px; }
-    input, textarea, button {
-      width: 90%; max-width: 500px;
-      padding: 12px; margin: 10px;
-      font-size: 18px; border: none; border-radius: 5px;
-    }
-    input, textarea { background: #333; color: #fff; }
-    button { background: #007bff; color: #fff; cursor: pointer; }
-    .error { color: yellow; }
+    body { background: #000; color: #fff; text-align: center; font-family: sans-serif; padding: 30px; }
+    textarea { width: 90%; height: 100px; margin-top: 20px; background: #111; color: #fff; border: none; font-size: 18px; padding: 10px; }
+    button { padding: 10px 20px; font-size: 16px; background: #0f0; color: #000; border: none; margin-top: 10px; cursor: pointer; }
   </style>
 </head>
 <body>
-  <h2>Joy ভাই - পাসওয়ার্ড দিয়ে লেখা দিন</h2>
-  <input id="pass" type="password" placeholder="পাসওয়ার্ড দিন"><br>
-  <textarea id="text" rows="5" placeholder="আপনার লেখাটি লিখুন..."></textarea><br>
-  <button onclick="send()">পাঠান</button>
-  <p id="msg" class="error"></p>
+  <h2>💬 Joy ভাই - ফোন থেকে পাঠান</h2>
+  <textarea id="textInput" placeholder="এখানে লিখুন..."></textarea><br />
+  <button onclick="sendText()">📤 পাঠান</button>
 
   <script>
-    const token = "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";
-    const correctPass = "joy123";
-    const repo = "copytext";
-    const user = "jehadjoy55";
+    const firebaseConfig = {
+      apiKey: "AIzaSyCdJKDPhOAK6G5jPUdUeYors41e5dzX1Dg",
+      authDomain: "livetextsync.firebaseapp.com",
+      databaseURL: "https://livetextsync-default-rtdb.firebaseio.com",
+      projectId: "livetextsync",
+      storageBucket: "livetextsync.firebasestorage.app",
+      messagingSenderId: "797246417933",
+      appId: "1:797246417933:web:3c6e4a1d5995c75ab6b944",
+      measurementId: "G-LXQV3VK7TJ"
+    };
 
-    async function send() {
-      const pass = document.getElementById("pass").value;
-      const text = document.getElementById("text").value;
-      const msg = document.getElementById("msg");
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-      if (pass !== correctPass) {
-        msg.innerText = "❌ ভুল পাসওয়ার্ড!";
-        return;
-      }
-
-      msg.innerText = "⏳ পাঠানো হচ্ছে...";
-
-      const content = {
+    function sendText() {
+      const text = document.getElementById('textInput').value;
+      database.ref("copy").set({
         text: text,
-        time: new Date().toLocaleString()
-      };
-
-      const encoded = btoa(JSON.stringify(content, null, 2));
-
-      const res = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/text.json`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `token ${token}`
-        },
-        body: JSON.stringify({
-          message: "Text Updated",
-          content: encoded,
-          sha: await getSHA()
-        })
+        time: Date.now()
       });
-
-      const data = await res.json();
-      if (data.content) {
-        msg.innerText = "✅ সফলভাবে পাঠানো হয়েছে!";
-      } else {
-        msg.innerText = "❌ ভুল হয়েছে!";
-      }
-    }
-
-    async function getSHA() {
-      const res = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/text.json`);
-      const data = await res.json();
-      return data.sha;
+      document.getElementById('textInput').value = "";
     }
   </script>
 </body>
